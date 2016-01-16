@@ -1,13 +1,11 @@
-define(["documentReady"], function(ready){
+define(["documentReady", "EventEmitter"], function(ready, EventEmitter){
 	"use strict";
 	var InputManager = {};
-	var callbacks = {'tap':[],'setBPM':[],'setDynamicBPM':[],'setMetronome':[],'setTiming':[]};
-	InputManager.addEventListener = function(eventType, callback) {
-		if (callbacks[eventType]) callbacks[eventType].push(callback);
-	}
+	var emitter = new EventEmitter(['tap']);
+	InputManager.addEventListener = emitter.addListener;
 
 	var focus = document.createElement("input");
-	focus.setAttribute('style', 'position:absolute;left:-100%');
+	focus.setAttribute('style', 'position:fixed;left:-100%;');
 	ready(function(){
 		document.body.appendChild(focus);
 		var game = document.querySelector('.sjs-game');
@@ -16,9 +14,7 @@ define(["documentReady"], function(ready){
 			focus.focus();
 		});
 		focus.addEventListener('keydown', function(e){
-			callbacks["tap"].forEach(function(func){
-				func({type:"tap", timeStamp:Date.now()});
-			});
+			emitter.emit('tap');
 		});
 	});
 	return InputManager;
