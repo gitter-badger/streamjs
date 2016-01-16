@@ -5,12 +5,12 @@ define(function(){
 		events.forEach(function(value){
 			callbacks[value] = [];
 		});
-		this.emit = function(eventType) {
+		this.emit = function(eventType, data) {
 			if(!callbacks[eventType]) {
 				throw "Error: "+eventType+" does not exist.";
 			}
 			callbacks[eventType].forEach(function(func){
-				func();
+				func(data);
 			});
 		};
 		this.addListener = function(eventType, callback) {

@@ -45,8 +45,9 @@
 	//update hitwindow size
 
 //audio
-define(["inputManager","BeatBox"],function(input, BeatBox){
+define(["inputManager","BeatBox", "TextDisplay"],function(input, BeatBox, TextDisplay){
 	"use strict";
 	var bb = new BeatBox(input);
+	var canvas = new TextDisplay(bb, {height: 30, width: 80, parent:".streamjs"});
 	return {};
 });
