@@ -1,1 +1,1 @@
-require("stream")
+require(["stream"])

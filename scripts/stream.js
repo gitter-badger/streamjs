@@ -1,15 +1,27 @@
-//beat manager
+//bpm
+	//takes nodes, feeds info to determine current and avg bpm
+	//returns current bpm
+	//getter for avgBPM
+
 //input manager
 	//capture keystrokes or ui, fire input event
 	//events: tap, setBPM, setDynamicBPM, setMetronome, setTiming
+//settingsPanel ?
+	//gui buttons
 //state
 	//set with input events
 	//current timing, metronome, dynamic bpm
 	//getters
-//graph
-	//on input, calculate deltaBeat, push node to stack node(timestamp, bpm, deltaBPM)
+//beatbox
+	//on input, 
+		//calculate deltaTap (time now - last node timestamp)
+		//calculate instantBPM
+		//get avgDeltaTap, subtract deltaTap = offset
+		//push node to stack node(timestamp, deltaTap, bpm, offset)
+		//update avgBPM and avgDeltaTap
 	//calculate: know last node, current time, getTiming
 	//new node event
+	//bpm
 //hitwindow
 	//private vars: blue, orange, red zone hit windows
 		//targetHitWindowSize
@@ -29,7 +41,7 @@
 	//make canvas thing
 	//make static line things
 	//create initial things
-	//get graph nodes
+	//get beatbox nodes
 	//plot nodes
 	//draw bpm line
 	//get avg bpm
@@ -37,6 +49,7 @@
 	//update hitwindow size
 
 //audio
-define(["bpm"],function(bpm){
-
+define(["inputManager","beatbox"],function(input, beatbox){
+	"use strict";
+	return {};
 });
