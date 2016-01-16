@@ -1,7 +1,3 @@
-//bpm
-	//takes nodes, feeds info to determine current and avg bpm
-	//returns current bpm
-	//getter for avgBPM
 
 //input manager
 	//capture keystrokes or ui, fire input event
@@ -49,7 +45,8 @@
 	//update hitwindow size
 
 //audio
-define(["inputManager","beatbox"],function(input, beatbox){
+define(["inputManager","BeatBox"],function(input, BeatBox){
 	"use strict";
+	var bb = new BeatBox(input);
 	return {};
 });
