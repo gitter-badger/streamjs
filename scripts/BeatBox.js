@@ -4,25 +4,23 @@
  * Tracks "tap" events from an InputManager and calculates beat statistics.
  * Fires "newNode" events every time a new record is added to this.nodes
  */
-define(["EventEmitter"], function(EventEmitter){
+define(["EventEmitter", "HitWindow", "Averager"], function(EventEmitter, HitWindow, Averager){
 	"use strict";
 	function BeatBox(input) {
 		var hiddenVars = { // private variables
 			nodeIndex: -1, // next index for insertion into this.nodes
-			avgIndex: 0, // next index for insertion into vars.avgNodes
-			avgNodes: [], // cyclical array to store the latest this.avgBPMWindow nodes
-			ee: new EventEmitter(["newNode"]) 
+			ee: new EventEmitter(["newNode"]),
+			// hw: new HitWindow(),
+			avg: new Averager(this)
 		};
 		this.beatboxHistory = 64; // how many nodes to store in history
-		this.avgBPMWindow = 8;    // how many nodes to use in average calculations
-		this.avgResetFactor = 2;  // delay time change factor that causes running average to be reset
 		this.timing = 1/4;        // rhythym of taps
-		this.avgDeltaTap = 0;     // calculated average of time deltas of last this.avgBPMWindow taps
-		this.avgBPM = 0;          // calculated average BPM of last this.avgBPMWindow taps
+		
 		this.nodes = [];          // cyclical array of nodes, limited to this.beatboxHistory entries
 		this.addEventListener = hiddenVars.ee.addListener;
 		var that = this;
 		this.addBeat = function(){addBeat.call(that, hiddenVars)};
+		this.getBPM = hiddenVars.avg.getBPM;
 		this.getRange = function(){
 			var sortedNodes = this.nodes.slice().sort(function(a1,a2){
 				return a1.bpm - a2.bpm;
@@ -56,36 +54,14 @@ define(["EventEmitter"], function(EventEmitter){
 			deltaTap = timeStamp - this.nodes[previousNodeIndex].timeStamp;
 			bpm = this.timing/(deltaTap/(60 * 1000));
 		}
-		
-		var offset = deltaTap - this.avgDeltaTap;
-		var newNode = {timeStamp:timeStamp, deltaTap:deltaTap, bpm:bpm, offset:offset};
+		var newNode = {timeStamp:timeStamp, deltaTap:deltaTap, bpm:bpm};
+		vars.avg.processNode(newNode);
+		// hw.processNode(newNode);
 		this.nodes[vars.nodeIndex] = newNode;
-
-		if (
-			deltaTap < this.avgDeltaTap/this.avgResetFactor ||
-			deltaTap > this.avgDeltaTap*this.avgResetFactor
-		) {
-			// flush the averaging window
-			vars.avgNodes = [];
-			vars.avgIndex = 0;
-		}
-		vars.avgNodes[vars.avgIndex] = newNode;
-
-		var totalBPM = 0, totalDeltaTap = 0;
-		var avgNodeCount = Math.min(this.avgBPMWindow, vars.avgNodes.length)
-		for (var i = 0; i < vars.avgNodes.length; i++) {
-			totalDeltaTap += vars.avgNodes[i].deltaTap;
-			totalBPM += vars.avgNodes[i].bpm;			
-		};
-		this.avgBPM = totalBPM/avgNodeCount;
-		this.avgDeltaTap = totalDeltaTap/avgNodeCount;
+		vars.ee.emit('newNode',newNode);
 		if (++vars.nodeIndex >= this.beatboxHistory) {
 			vars.nodeIndex = 0;
 		}
-		if (++vars.avgIndex >= this.avgBPMWindow) {
-			vars.avgIndex = 0;
-		}
-		vars.ee.emit('newNode',newNode);
 	}
 
 	return BeatBox;

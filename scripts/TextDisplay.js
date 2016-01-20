@@ -40,7 +40,7 @@ define(['inputManager'], function(input){
 			var sorted = beatBox.getNodes();
 			var bounds = beatBox.getRange();
 			var range = bounds.max - bounds.min;
-			var bpm = beatBox.avgBPM;
+			var bpm = beatBox.getBPM();
 			var scale = properties.height / range;
 			var grid = makeGrid();
 			var t, node, y;
@@ -49,7 +49,7 @@ define(['inputManager'], function(input){
 				y = properties.height - Math.round((node.bpm - bounds.min) * scale);
 				grid[t][y] = node;
 			}
-			grid.avgBPM = Math.round(beatBox.avgBPM);
+			grid.avgBPM = Math.round(bpm);
 			grid.avgLineY = properties.height - Math.round((bpm - bounds.min) * scale);
 			grid.minBPM = Math.floor(bounds.min);
 			grid.maxBPM = Math.ceil(bounds.max);
